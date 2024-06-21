@@ -1,6 +1,17 @@
 <?php
-$db = pg_connect("host=localhost dbname=postgres user=postgres password=rootroot");
-if (!$db) {
-    die("Ошибка подключения к базе данных");
-}
+    class Database {
+        private $connection;
+
+        public function __construct($host, $dbname, $user, $password) {
+            $this->connection = new mysqli($host, $user, $password, $dbname);
+            if ($this->connection->connect_error) {
+                die("Ошибка подключения к базе данных: " . $this->connection->connect_error);
+            }
+        }
+
+        public function getConnection() {
+            return $this->connection;
+        }
+    }
+
 ?>

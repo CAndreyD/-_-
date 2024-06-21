@@ -1,18 +1,21 @@
 <?php
 require 'db.php';
+$db = new Database("localhost", "dbname", "username", "password");
+
+require 'feedback-form.php';
+$feedbackForm = new FeedbackForm($db);
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $fio = pg_escape_string($db, $_POST['fio']);
-    $email = pg_escape_string($db, $_POST['email']);
-    $message = pg_escape_string($db, $_POST['message']);
+    $fio = $_POST['fio'];
+    $email = $_POST['email'];
+    $message = $_POST['message'];
 
-    $query = "INSERT INTO todolist.feedback (fio, email, message) VALUES ($1, $2, $3)";
-    $result = pg_query_params($db, $query, array($fio, $email, $message));
+    $result = $feedbackForm->saveFeedback($fio, $email, $message);
 
     if ($result) {
         header("Location: index.php");
     } else {
-        echo "Ошибка при сохранении данных: " . pg_last_error($db);
+        echo "Ошибка при сохранении данных: " . $db->getConnection()->error;
     }
 }
 ?>

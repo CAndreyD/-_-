@@ -17,18 +17,21 @@
     </form>
 
     <?php
-    require 'db.php';
-    $query = "SELECT * FROM todolist.feedback";
-    $result = pg_query($db, $query);
-    if (pg_num_rows($result) > 0) {
-        echo "<h2>Сохраненные сообщения:</h2>";
-        while ($row = pg_fetch_assoc($result)) {
-            echo "<p><strong>ФИО:</strong> " . htmlspecialchars($row['fio']) . "</p>";
-            echo "<p><strong>Email:</strong> " . htmlspecialchars($row['email']) . "</p>";
-            echo "<p><strong>Сообщение:</strong> " . htmlspecialchars($row['message']) . "</p><hr>";
-        }
-    } else {
-        echo "<p>Нет сохраненных сообщений.</p>";
+        class FeedbackForm {
+            private $db;
+
+            public function __construct($db) {
+                $this->db = $db;
+            }
+
+            public function saveFeedback($fio, $email, $message) {
+                $query = "INSERT INTO feedback (fio, email, message) VALUES (?, ?, ?)";
+                $statement = $this->db->getConnection()->prepare($query);
+                $statement->bind_param("sss", $fio, $email, $message);
+                $result = $statement->execute();
+                
+                return $result;
+            }
     }
     ?>
 </body>
